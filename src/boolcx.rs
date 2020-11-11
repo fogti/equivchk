@@ -116,12 +116,15 @@ impl Document {
         }
     }
 
-    pub fn iter_permute(&self) {
+    pub fn iter_permute(&self) -> bool {
         let vrefs: Vec<_> = self.vars.values().cloned().collect();
         // 1. reset all refs
         for i in &vrefs {
             i.set(false);
         }
+
+        let mut is_same = true;
+
         loop {
             // 2. print permutation
             for (k, v) in self.vars.iter() {
@@ -130,15 +133,23 @@ impl Document {
 
             // 3. print term results
             print!("| output");
+            let mut res = Vec::new();
             for (n, t) in self.terms.iter().enumerate() {
-                print!(", {}={}", n, t.eval());
+                let y = t.eval();
+                res.push(y);
+                print!(", {}={}", n, y);
             }
             println!();
+            if !crate::is_all_same(&res[..]) {
+                is_same = false;
+            }
 
             // 4. next permutation
             if Self::iter_permute_inner1(&vrefs[..]) {
                 break;
             }
         }
+
+        return is_same;
     }
 }

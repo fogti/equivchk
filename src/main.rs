@@ -1,5 +1,13 @@
 pub mod boolcx;
 
+// https://mastodon.social/@pingveno/102227428277791031
+fn is_all_same<T: Eq>(slice: &[T]) -> bool {
+    slice
+        .get(0)
+        .map(|first| slice.iter().all(|x| x == first))
+        .unwrap_or(true)
+}
+
 fn main() {
     use std::process::exit;
     let args: Vec<_> = std::env::args().collect();
@@ -12,5 +20,11 @@ fn main() {
     let src = std::str::from_utf8(&*src).expect("file isn't valid UTF-8");
 
     let document = boolcx::Document::parse(src);
-    document.iter_permute();
+
+    let is_same = document.iter_permute();
+    println!("the given terms are {}", if is_same {
+        "equivalent"
+    } else {
+        "not equivalent"
+    });
 }
