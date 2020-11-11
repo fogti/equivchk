@@ -84,7 +84,7 @@ impl Document {
 
         let mut terms = Vec::new();
         for i in lines {
-            if i.is_empty() || i.starts_with("#") {
+            if i.is_empty() || i.starts_with('#') {
                 continue;
             }
             let parsed = match ess::parse_one(i) {
@@ -102,10 +102,9 @@ impl Document {
 
     // @return: has carry?
     fn iter_permute_inner1(xs: &[VarRc<bool>]) -> bool {
-        if xs.len() == 0 {
-            return true;
-        }
-        if Self::iter_permute_inner1(&xs[1..]) {
+        if xs.is_empty() {
+            true
+        } else if Self::iter_permute_inner1(&xs[1..]) {
             // got carry
             let ov = xs[0].get();
             xs[0].set(!ov);
@@ -117,7 +116,9 @@ impl Document {
     }
 
     pub fn iter_permute(&self) -> bool {
-        let vrefs: Vec<_> = self.vars.values().cloned().collect();
+        let mut vfrefs: Vec<_> = self.vars.iter().collect();
+        vfrefs.sort_unstable_by_key(|(k, _)| k.as_str());
+        let vrefs: Vec<_> = vfrefs.iter().map(|(_, v)| (*v).clone()).collect();
         // 1. reset all refs
         for i in &vrefs {
             i.set(false);
@@ -127,8 +128,8 @@ impl Document {
 
         loop {
             // 2. print permutation
-            for (k, v) in self.vars.iter() {
-                print!("{}={}, ", k, v.get());
+            for (k, v) in vfrefs.iter() {
+                print!("{}={}, ", k, if v.get() { 1 } else { 0 });
             }
 
             // 3. print term results
@@ -137,7 +138,7 @@ impl Document {
             for (n, t) in self.terms.iter().enumerate() {
                 let y = t.eval();
                 res.push(y);
-                print!(", {}={}", n, y);
+                print!(", {}={}", n, if y { 1 } else { 0 });
             }
             println!();
             if !crate::is_all_same(&res[..]) {
@@ -150,6 +151,6 @@ impl Document {
             }
         }
 
-        return is_same;
+        is_same
     }
 }
