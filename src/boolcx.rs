@@ -80,10 +80,13 @@ impl Document {
 
     pub fn parse(s: &str) -> Document {
         let mut lines = s.lines();
-        let vars: Vars = lines.next().expect("no vars given").split_whitespace().map(|i| (i.to_string(), Default::default())).collect();
+        let vars: Vars = lines.next().expect("no setup given").split_whitespace().map(|i| (i.to_string(), Default::default())).collect();
 
         let mut terms = Vec::new();
         for i in lines {
+            if i.is_empty() || i.starts_with("#") {
+                continue;
+            }
             let parsed = match ess::parse_one(i) {
                 Ok((x, _)) => x,
                 Err(e) => panic!("got invalid line: [{}] with error: {:?}", i, e),
