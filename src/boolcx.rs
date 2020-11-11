@@ -34,7 +34,7 @@ impl Document {
     fn tress(vars: &Vars, i: &str, s: ess::Sexp) -> yz_ops::Term<bool> {
         let l = match s {
             ess::Sexp::List(l, _) => l,
-            ess::Sexp::Str(y, _) => match &*y {
+            ess::Sexp::Sym(y, _) => match &*y {
                 "true" | "1" => return Box::new(E::Wrap(true)),
                 "false" | "0" => return Box::new(E::Wrap(false)),
                 varname if vars.contains_key(varname) => return Box::new(vars.get(varname).unwrap().clone()),
@@ -45,7 +45,7 @@ impl Document {
         let argc = l.len();
         let mut it = l.into_iter();
         let cmd = match it.next() {
-            Some(ess::Sexp::Str(x, _)) => x,
+            Some(ess::Sexp::Sym(x, _)) => x,
             x => panic!("got invalid line: [{}] which contains an invalid command invocation: {:?}", i, x),
         };
         use yz_ops::{logical as L, eval as E};
@@ -64,13 +64,13 @@ impl Document {
             },
             ("or", _) => {
                 Box::new(E::NaryApply {
-                    op: L::And,
+                    op: L::Or,
                     x: it.map(|j| Self::tress(vars, i, j)).collect(),
                 })
             },
             ("xor", _) => {
                 Box::new(E::NaryApply {
-                    op: L::And,
+                    op: L::Xor,
                     x: it.map(|j| Self::tress(vars, i, j)).collect(),
                 })
             },
@@ -133,6 +133,7 @@ impl Document {
             for (n, t) in self.terms.iter().enumerate() {
                 print!(", {}={}", n, t.eval());
             }
+            println!();
 
             // 4. next permutation
             if Self::iter_permute_inner1(&vrefs[..]) {

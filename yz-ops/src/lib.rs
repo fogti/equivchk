@@ -68,6 +68,26 @@ pub mod logical {
     binary_op!(Xor, BitXor, bitxor, Zero, zero);
     binary_op!(Shl, Shl, shl);
     binary_op!(Shr, Shr, shr);
+
+    #[cfg(test)]
+    mod tests {
+        use crate::eval as E;
+        use crate::logical as L;
+        #[test]
+        fn orium() {
+            assert_eq!(false, E::BinaryEval::eval(&L::Or, false, false));
+            assert_eq!(true, E::BinaryEval::eval(&L::Or, true, false));
+            assert_eq!(true, E::BinaryEval::eval(&L::Or, false, true));
+            assert_eq!(true, E::BinaryEval::eval(&L::Or, true, true));
+        }
+        #[test]
+        fn orium_n() {
+            assert_eq!(false, E::NaryEval::eval(&L::Or, [false, false].iter().copied()));
+            assert_eq!(true, E::NaryEval::eval(&L::Or, [true, false].iter().copied()));
+            assert_eq!(true, E::NaryEval::eval(&L::Or, [false, true].iter().copied()));
+            assert_eq!(true, E::NaryEval::eval(&L::Or, [true, true].iter().copied()));
+        }
+    }
 }
 
 pub mod numeric {
