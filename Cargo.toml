@@ -10,3 +10,4 @@ license = "Apache-2.0"
 
 [dependencies]
 yz-ops = { path = "yz-ops" }
+ess = "0.4.2"

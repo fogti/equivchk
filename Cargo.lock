@@ -10,8 +10,15 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 name = "equivchk"
 version = "0.1.0"
 dependencies = [
+ "ess",
  "yz-ops",
 ]
+
+[[package]]
+name = "ess"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c70ece3a2affa9eda5d916d778fe80fe2b7357aeb2d7b38f35286cfa983571d0"
 
 [[package]]
 name = "num-traits"

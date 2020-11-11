@@ -28,6 +28,15 @@ impl<Value: Copy> InnerEval for Wrap<Value> {
     }
 }
 
+#[cfg(feature = "alloc")]
+impl<Apply: InnerEval + ?Sized> InnerEval for alloc::boxed::Box<Apply> {
+    type Output = Apply::Output;
+    #[inline(always)]
+    fn eval(&self) -> Apply::Output {
+        (&**self).eval()
+    }
+}
+
 // unary evaluation
 
 pub trait UnaryEval<Value> {
