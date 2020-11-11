@@ -1,0 +1,17 @@
+[package]
+name = "yz-ops"
+version = "0.1.0"
+authors = ["Erik Zscheile <zseri.devel@ytrizja.de>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+
+[features]
+default = ["alloc"]
+alloc = []
+debug_impl = []
+
+[dependencies]
+
+[dependencies.num-traits]
+version = "0.2"
+default-features = false

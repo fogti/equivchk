@@ -1,0 +1,12 @@
+[workspace]
+members = ["yz-ops", "."]
+
+[package]
+name = "equivchk"
+version = "0.1.0"
+authors = ["Erik Zscheile <zseri.devel@ytrizja.de>"]
+edition = "2018"
+license = "Apache-2.0"
+
+[dependencies]
+yz-ops = { path = "yz-ops" }
