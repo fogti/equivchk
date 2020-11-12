@@ -21,7 +21,7 @@ fn main() {
 
     let document = boolcx::Document::parse(src);
 
-    let is_same = document.iter_permute();
+    let is_same = document.all_permute();
     println!(
         "the given terms are {}",
         if is_same {

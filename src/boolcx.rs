@@ -30,6 +30,9 @@ pub struct Document {
     pub terms: Vec<yz_ops::Term<u32>>,
 }
 
+const PREPERMUTE: &[u32] = &[0xaaaaaaaa, 0xcccccccc, 0xf0f0f0f0, 0xff00ff00, 0xffff0000];
+const PERM_ULEN: usize = PREPERMUTE.len();
+
 impl Document {
     fn tress(vars: &Vars, i: &str, s: ess::Sexp) -> yz_ops::Term<u32> {
         let l = match s {
@@ -102,32 +105,17 @@ impl Document {
         Document { vars, terms }
     }
 
-    // @return: has carry?
-    fn iter_permute_inner1(xs: &[VarRc<u32>]) -> bool {
-        if xs.is_empty() {
-            true
-        } else if Self::iter_permute_inner1(&xs[1..]) {
-            // got carry
-            let ov = xs[0].get();
-            xs[0].set(!ov);
-            // if the value was 'true', propagate the carry
-            ov > 0
-        } else {
-            false
-        }
-    }
-
-    pub fn iter_permute(&self) -> bool {
-        static PREPERMUTE: &[u32] = &[0xaaaaaaaa, 0xcccccccc, 0xf0f0f0f0, 0xff00ff00, 0xffff0000];
-
+    pub fn all_permute(&self) -> bool {
         let vrefs: Vec<_> = self.vars.iter().map(|(_, v)| (*v).clone()).collect();
         let mut is_same = true;
 
-        // 1. prepare the first 5 vars with preset values, reset the rest
-        vrefs
-            .iter()
-            .zip(PREPERMUTE.iter().copied().chain(std::iter::repeat(0)))
-            .for_each(|(i, p)| i.set(p));
+        // 1. prepare the variables
+        for chunk in vrefs.rchunks(PREPERMUTE.len()) {
+            chunk
+                .iter()
+                .zip(PREPERMUTE.iter())
+                .for_each(|(i, &p)| i.set(p));
+        }
 
         loop {
             // 2. print permutation
@@ -151,9 +139,27 @@ impl Document {
             }
 
             // 5. next permutation
-            if vrefs.len() <= PREPERMUTE.len()
-                || Self::iter_permute_inner1(&vrefs[PREPERMUTE.len()..])
-            {
+            if vrefs.len() <= PERM_ULEN {
+                break;
+            }
+            let mut has_carry = true;
+            for chunk in vrefs[PERM_ULEN..].rchunks(PERM_ULEN) {
+                has_carry = true;
+                for i in chunk.iter() {
+                    let cur = i.get();
+                    if cur & 0b1 == 0b0 {
+                        // we don't have a carry
+                        has_carry = false;
+                    }
+                    // invert
+                    i.set(!cur);
+                }
+                if !has_carry {
+                    // no carry to propagate, we are done with incrementing
+                    break;
+                }
+            }
+            if has_carry {
                 break;
             }
         }
