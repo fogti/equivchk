@@ -32,7 +32,7 @@ macro_rules! unary_op {
                 core::ops::$op::$method(a)
             }
         }
-    }
+    };
 }
 
 macro_rules! binary_op {
@@ -82,10 +82,22 @@ pub mod logical {
         }
         #[test]
         fn orium_n() {
-            assert_eq!(false, E::NaryEval::eval(&L::Or, [false, false].iter().copied()));
-            assert_eq!(true, E::NaryEval::eval(&L::Or, [true, false].iter().copied()));
-            assert_eq!(true, E::NaryEval::eval(&L::Or, [false, true].iter().copied()));
-            assert_eq!(true, E::NaryEval::eval(&L::Or, [true, true].iter().copied()));
+            assert_eq!(
+                false,
+                E::NaryEval::eval(&L::Or, [false, false].iter().copied())
+            );
+            assert_eq!(
+                true,
+                E::NaryEval::eval(&L::Or, [true, false].iter().copied())
+            );
+            assert_eq!(
+                true,
+                E::NaryEval::eval(&L::Or, [false, true].iter().copied())
+            );
+            assert_eq!(
+                true,
+                E::NaryEval::eval(&L::Or, [true, true].iter().copied())
+            );
         }
     }
 }

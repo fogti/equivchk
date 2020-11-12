@@ -22,9 +22,12 @@ fn main() {
     let document = boolcx::Document::parse(src);
 
     let is_same = document.iter_permute();
-    println!("the given terms are {}", if is_same {
-        "equivalent"
-    } else {
-        "not equivalent"
-    });
+    println!(
+        "the given terms are {}",
+        if is_same {
+            "equivalent"
+        } else {
+            "not equivalent"
+        }
+    );
 }
